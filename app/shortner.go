@@ -17,6 +17,7 @@ func NewShortner() *Shortner {
 	}
 }
 
+// ShortenURL creates short version of URL using CRC32 hashing
 func (s *Shortner) ShortenURL(url string) (shortenedURL string) {
 	checksum := crc32.ChecksumIEEE([]byte(url))
 	shortenedURL = fmt.Sprintf("%08x", checksum)
@@ -24,6 +25,7 @@ func (s *Shortner) ShortenURL(url string) (shortenedURL string) {
 	return
 }
 
+// OriginalURL looks-up storage for original URL associated with short version and returns it if found
 func (s *Shortner) OriginalURL(shortenedURL string) (url string, err error) {
 	if val, ok := s.inMemoryStore.Load(shortenedURL); !ok {
 		err = errors.New("url not found")
