@@ -60,7 +60,7 @@ func (s *Service) redirectHanlder(c echo.Context) (err error) {
 	// Lookup original URL
 	url, ok := s.urlStore.Load(shortenedURL)
 	if !ok || url == "" {
-		return c.String(http.StatusNotFound, "Short URL not found")
+		return echo.NewHTTPError(http.StatusBadRequest, "shortened url not found")
 	}
 
 	originalURL := url.(string)
