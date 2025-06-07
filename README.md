@@ -2,7 +2,7 @@
 A URL Shortner Service
 
 This is a simple URL shortener service that accepts a URL as an argument over a REST API and
-returns a shortened URL as a result. (Similar to bitly.com or tinyurl.com)
+returns a shortened URL as a result. And then redirects you to the original URL whenever you try to open shortened URL (Similar to https://bitly.com or https://tinyurl.com)
 
 ### Supported Features
 <p>
@@ -38,3 +38,35 @@ Wikipedia links and 6 Udemy tutorial links. Then the output would be:<br>
     ```
 
 </p>
+
+### Steps to build and run the service
+
+#### Build
+```bash
+$ go mod tidy
+$ go build
+```
+
+#### Run
+If you need to updated configurations like server listener address and port, you can update config/config.defaults.yaml for now
+```bash
+$ ./sureshort
+
+   ____    __
+  / __/___/ /  ___
+ / _// __/ _ \/ _ \
+/___/\__/_//_/\___/ v4.13.4
+High performance, minimalist Go web framework
+https://echo.labstack.com
+____________________________________O/_______
+                                    O\
+⇨ http server started on [::]:80
+```
+
+#### Test
+```bash
+$ go test -coverprofile=coverage.out ./...
+        github.com/surajbhosale409/sureshort            coverage: 0.0% of statements
+ok      github.com/surajbhosale409/sureshort/pkg        0.330s  coverage: 100.0% of statements
+ok      github.com/surajbhosale409/sureshort/service    1.459s  coverage: 91.1% of statements
+```

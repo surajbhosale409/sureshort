@@ -8,18 +8,18 @@ import (
 
 func TestNewService(t *testing.T) {
 	t.Run("creates new service with default config", func(t *testing.T) {
-		service := NewService(Config{})
+		service := NewService(&Config{})
 		assert.NotNil(t, service)
-		assert.Equal(t, service.config, Config{
+		assert.Equal(t, service.config, &Config{
 			ServiceName: defaultServiceName,
 			Address:     defaultListenerAddress,
 			Port:        defaultPort,
 		})
-		assert.Equal(t, len(service.echoService.Routes()), 3)
+		assert.Equal(t, len(service.echoService.Routes()), 4)
 	})
 
 	t.Run("creates new service with custom config", func(t *testing.T) {
-		config := Config{
+		config := &Config{
 			ServiceName: "test-service",
 			Address:     "localhost",
 			Port:        "443",
@@ -27,7 +27,7 @@ func TestNewService(t *testing.T) {
 		service := NewService(config)
 		assert.NotNil(t, service)
 		assert.Equal(t, service.config, config)
-		assert.Equal(t, len(service.echoService.Routes()), 3)
+		assert.Equal(t, len(service.echoService.Routes()), 4)
 	})
 }
 

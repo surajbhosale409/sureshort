@@ -11,12 +11,12 @@ import (
 
 type Config struct {
 	ServiceName string `json:"serviceName" yaml:"serviceName"`
-	Address     string `json:"address" yaml:"serviceName"`
-	Port        string `json:"port" yaml:"serviceName"`
+	Address     string `json:"address" yaml:"address"`
+	Port        string `json:"port" yaml:"port"`
 }
 
 type Service struct {
-	config      Config
+	config      *Config
 	urlStore    sync.Map
 	stats       *pkg.Stats
 	echoService *echo.Echo
@@ -28,7 +28,7 @@ const (
 	defaultPort            = "8080"
 )
 
-func NewService(config Config) (service *Service) {
+func NewService(config *Config) (service *Service) {
 
 	// if address is not provided, set * to listen on addresses of all interfaces
 	if config.Address == "" {
