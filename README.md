@@ -24,6 +24,12 @@ returns a shortened URL as a result. (Similar to bitly.com or tinyurl.com)
         {"url": "google.com"}
         ```
   For which server returns an response as follows:
+  
+  text/html:
+  ```
+  <server-address>/e14f0993
+  ```
+  application/json
   ```
     {"shortened_url": "<server-address>/e14f0993"}
   ```

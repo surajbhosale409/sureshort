@@ -1,7 +1,9 @@
 package service
 
 import (
+	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/labstack/echo/v4"
 )
@@ -30,20 +32,46 @@ func (s *Service) shortenURLHandler(c echo.Context) (err error) {
 
 	shortenedURL := ShortenURL(reqParams.URL)
 	s.urlStore.Store(shortenedURL, reqParams.URL)
-	return c.JSON(http.StatusOK, ShortenURLResponseParams{
-		ShortenedURL: shortenedURL,
-	})
+	shortenedURL = fmt.Sprintf("http://%s/%s", c.Request().Host, shortenedURL)
+
+	acceptHeader := c.Request().Header.Get("Accept")
+
+	switch acceptHeader {
+	case "application/json":
+		return c.JSON(http.StatusOK, ShortenURLResponseParams{
+			ShortenedURL: shortenedURL,
+		})
+	default: //return text/html response by default
+		return c.HTML(http.StatusOK, fmt.Sprintf("<a href='%s' target='_blank'>%s</a>", shortenedURL, shortenedURL))
+	}
+}
+
+func hasScheme(rawurl string) bool {
+	u, err := url.Parse(rawurl)
+	if err != nil {
+		return false // invalid URL, treat as no scheme
+	}
+	return u.Scheme != ""
 }
 
 func (s *Service) redirectHanlder(c echo.Context) (err error) {
-	shortenedURL := c.Param("shortened_url")
+	shortenedURL := c.Param("url")
 
 	// Lookup original URL
-	originalURL, ok := s.urlStore.Load(shortenedURL)
-	if !ok || originalURL == "" {
+	url, ok := s.urlStore.Load(shortenedURL)
+	if !ok || url == "" {
 		return c.String(http.StatusNotFound, "Short URL not found")
 	}
 
+	originalURL := url.(string)
+	if !hasScheme(originalURL) {
+		originalURL = fmt.Sprintf("http://%s", originalURL)
+	}
+
 	// Redirect to original URL
-	return c.Redirect(http.StatusMovedPermanently, originalURL.(string))
+	c.Response().Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
+	c.Response().Header().Set("Pragma", "no-cache")
+	c.Response().Header().Set("Expires", "0")
+	c.Response().Header().Set("Surrogate-Control", "no-store")
+	return c.Redirect(http.StatusFound, originalURL)
 }

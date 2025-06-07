@@ -21,8 +21,8 @@ type Service struct {
 
 const (
 	defaultServiceName     = "sureshort"
-	defaultListenerAddress = "*"
-	defaultPort            = "80"
+	defaultListenerAddress = "0.0.0.0"
+	defaultPort            = "8080"
 )
 
 func NewService(config Config) (service *Service) {

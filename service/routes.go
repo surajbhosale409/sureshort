@@ -8,5 +8,5 @@ func (s *Service) registerRoutes() {
 	appRoutes.POST("/create", s.shortenURLHandler)
 
 	// redirect route
-	s.echoService.GET("/:shortened_url", s.redirectHanlder)
+	s.echoService.GET("/:url", s.redirectHanlder)
 }
