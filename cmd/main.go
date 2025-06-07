@@ -8,7 +8,7 @@ import (
 
 func main() {
 
-	service := app.NewShortnerService()
+	service := app.NewShortner()
 	googleShort := service.ShortenURL("google.com")
 	fmt.Println("facebook.com", service.ShortenURL("facebook.com"))
 	fmt.Println("amazon.com", service.ShortenURL("amazon.com"))
