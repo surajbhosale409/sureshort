@@ -17,7 +17,7 @@ RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 
 COPY --from=builder /app/sureshort .
-COPY --from=builder /app/config .
+COPY --from=builder /app/config/ config
 
 # Expose port (optional)
 EXPOSE 80
