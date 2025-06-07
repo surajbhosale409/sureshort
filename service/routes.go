@@ -6,6 +6,8 @@ func (s *Service) registerRoutes() {
 	// shorten url routes
 	appRoutes.GET("/create", s.shortenURLHandler)
 	appRoutes.POST("/create", s.shortenURLHandler)
+	// metrics route
+	appRoutes.GET("/metrics", s.metricsHandler)
 
 	// redirect route
 	s.echoService.GET("/:url", s.redirectHanlder)

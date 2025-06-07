@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/labstack/echo/v4"
+	"github.com/surajbhosale409/sureshort/pkg"
 )
 
 type ShortenURLRequestParams struct {
@@ -27,15 +29,18 @@ func (s *Service) shortenURLHandler(c echo.Context) (err error) {
 		return echo.NewHTTPError(http.StatusBadRequest, "url cannot be empty")
 	}
 
-	// asynchronously record shortening stats
+	if !hasScheme(reqParams.URL) {
+		reqParams.URL = fmt.Sprintf("http://%s", reqParams.URL)
+	}
+
+	shortenedURL := pkg.Crc32Hash(reqParams.URL)
+	s.urlStore.Store(shortenedURL, reqParams.URL)
+
+	// asynchronously record stats
 	go s.recordStats(reqParams.URL)
 
-	shortenedURL := ShortenURL(reqParams.URL)
-	s.urlStore.Store(shortenedURL, reqParams.URL)
 	shortenedURL = fmt.Sprintf("http://%s/%s", c.Request().Host, shortenedURL)
-
 	acceptHeader := c.Request().Header.Get("Accept")
-
 	switch acceptHeader {
 	case "application/json":
 		return c.JSON(http.StatusOK, ShortenURLResponseParams{
@@ -64,9 +69,6 @@ func (s *Service) redirectHanlder(c echo.Context) (err error) {
 	}
 
 	originalURL := url.(string)
-	if !hasScheme(originalURL) {
-		originalURL = fmt.Sprintf("http://%s", originalURL)
-	}
 
 	// Redirect to original URL
 	c.Response().Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, proxy-revalidate")
@@ -74,4 +76,9 @@ func (s *Service) redirectHanlder(c echo.Context) (err error) {
 	c.Response().Header().Set("Expires", "0")
 	c.Response().Header().Set("Surrogate-Control", "no-store")
 	return c.Redirect(http.StatusFound, originalURL)
+}
+
+func (s *Service) metricsHandler(c echo.Context) (err error) {
+	response := strings.Join(s.stats.Top(3), "\n")
+	return c.String(http.StatusOK, response)
 }

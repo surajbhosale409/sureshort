@@ -1,10 +1,12 @@
 package service
 
 import (
+	"net/url"
 	"sync"
 
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/surajbhosale409/sureshort/pkg"
 )
 
 type Config struct {
@@ -16,6 +18,7 @@ type Config struct {
 type Service struct {
 	config      Config
 	urlStore    sync.Map
+	stats       *pkg.Stats
 	echoService *echo.Echo
 }
 
@@ -43,6 +46,7 @@ func NewService(config Config) (service *Service) {
 
 	service = &Service{
 		config: config,
+		stats:  pkg.NewStats(),
 	}
 	service.Initialise()
 
@@ -70,6 +74,10 @@ func (s *Service) Serve() {
 	s.echoService.Logger.Fatal(s.echoService.Start(s.config.Address + ":" + s.config.Port))
 }
 
-func (s *Service) recordStats(url string) {
-
+func (s *Service) recordStats(targetURL string) {
+	u, err := url.Parse(targetURL)
+	if err != nil || u.Host == "" {
+		return
+	}
+	s.stats.Observe(u.Host)
 }

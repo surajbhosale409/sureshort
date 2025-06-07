@@ -38,11 +38,9 @@ returns a shortened URL as a result. (Similar to bitly.com or tinyurl.com)
 number of times. For eg. if the user hasshortened 4 YouTube video links, 1 StackOverflow link,2
 Wikipedia links and 6 Udemy tutorial links. Then the output would be:<br>
     ```
-    {
-        "Udemy": 6,
-        "YouTube": 4,
-        "Wikipedia": 2
-    }
+    Udemy: 6,
+    YouTube: 4,
+    Wikipedia: 2
     ```
 
 </p>
