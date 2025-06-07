@@ -1,4 +1,4 @@
-package app
+package service
 
 import (
 	"errors"
@@ -18,10 +18,9 @@ func NewShortner() *Shortner {
 }
 
 // ShortenURL creates short version of URL using CRC32 hashing
-func (s *Shortner) ShortenURL(url string) (shortenedURL string) {
+func ShortenURL(url string) (shortenedURL string) {
 	checksum := crc32.ChecksumIEEE([]byte(url))
 	shortenedURL = fmt.Sprintf("%08x", checksum)
-	s.inMemoryStore.Store(shortenedURL, url)
 	return
 }
 
